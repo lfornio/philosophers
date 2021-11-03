@@ -1,6 +1,7 @@
 NAME		= 	philo
-SRCS		= 	philo.c \
-				function_0.c
+SRCS		= 	philo_3.c \
+				function_0.c \
+				treads_work.c
 CC 			= 	gcc
 FLAGS		=	-Wall -Wextra -Werror
 INCLUDES	=	philo.h

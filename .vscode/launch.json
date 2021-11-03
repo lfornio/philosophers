@@ -8,8 +8,8 @@
 			"type": "lldb",
 			"request": "launch",
 			"name": "Debug",
-			"program": "${workspaceFolder}/a.out",
-			"args": [],
+			"program": "${workspaceFolder}/philo",
+			"args": ["4" "410" "200" "200"],
 			"cwd": "${workspaceFolder}"
 		}
 	]

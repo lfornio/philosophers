@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 09:39:40 by lfornio           #+#    #+#             */
-/*   Updated: 2021/10/29 10:42:37 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/02 13:38:54 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,21 @@ long long	long_atoi(const char *str)
 	}
 	n = n * b;
 	return (n);
+}
+
+int error_arg(char *str)
+{
+	int i;
+	int count;
+	count = 0;
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] >= '0' && str[i] <= '9')
+			count++;
+		else
+			return (1);
+		i++;
+	}
+	return (0);
 }
