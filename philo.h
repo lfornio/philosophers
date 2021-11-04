@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/05 14:46:08 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/03 13:40:13 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/04 16:16:09 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 // 	struct timeval end;
 // 	struct timeval res;
 // } t_time;
+int flag;
 
 typedef struct s_arguments
 {
@@ -43,6 +44,9 @@ typedef struct s_arguments
 	int time_to_sleep;
 	int num_of_fork;
 	int num_each;
+	long long time_start;
+	pthread_mutex_t *lock;
+	// pthread_mutex_t *lock_2;
 	pthread_mutex_t *forks;
 } t_arguments;
 
@@ -50,9 +54,14 @@ typedef struct s_philosophers
 {
 	int i;
 	int id;
-	int status;
+	// int status;
 	int left_fork;
 	int right_fork;
+	long long time_die;
+	long long time_last_eat;
+	// long long stop;
+	int count_how_many_eat;
+	int hungry;
 	pthread_mutex_t *left;
 	pthread_mutex_t *right;
 	t_arguments *for_philo;
@@ -65,6 +74,10 @@ int	f_atoi(const char *str);
 long long	long_atoi(const char *str);
 int error_arg(char *str);
 void *treads_work(void *arguments);
+long long get_time_msec(void);
+void count_time(int a);
+void *waiter_work(void *arg);
+void print_status(int time, t_philosophers *a, int i);
 // struct timeval take_time(void);
 // int time_print(t_philosophers *a);
 

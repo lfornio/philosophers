@@ -6,14 +6,18 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 07:54:02 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/03 14:39:16 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/04 16:30:01 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+// int flag = 0;
+
+
 int main(int argc, char **argv)
 {
+
 	if (argc < 5 || argc > 6)
 	{
 		printf("Error arguments\n");
@@ -31,6 +35,11 @@ int main(int argc, char **argv)
 	}
 
 	t_arguments data;
+	pthread_mutex_t l;
+	// pthread_mutex_t l_2;
+	pthread_mutex_init(&l, NULL);
+	// pthread_mutex_init(&l_2, NULL);
+
 	// t_time time;
 	data.num_of_philo = f_atoi(argv[1]);
 	if (data.num_of_philo < 1)
@@ -42,6 +51,8 @@ int main(int argc, char **argv)
 	data.time_to_eat = f_atoi(argv[3]);
 	data.time_to_sleep = f_atoi(argv[4]);
 	data.num_of_fork = data.num_of_philo;
+	data.lock = &l;
+	// data.lock_2 = &l_2;
 	if (argc == 6)
 		data.num_each = f_atoi(argv[5]);
 	else
@@ -56,10 +67,12 @@ int main(int argc, char **argv)
 	{
 		philo[i].i = i;
 		philo[i].id = i + 1;
-		philo[i].status = 0;
+		// philo[i].status = 0;
 		philo[i].for_philo = &data;
 		philo[i].left_fork = i;
 		philo[i].right_fork = (i + 1) % data.num_of_fork;
+		philo[i].count_how_many_eat = 0;
+		philo[i].hungry = 0;
 		// philo[i].time_for_philo = &time;
 		i++;
 	}
@@ -88,19 +101,32 @@ int main(int argc, char **argv)
 	if(!philo_treads)
 		return (1);
 	i = 0;
-	// data.time->start = take_time();
-	while(i < data.num_of_philo)
+	data.time_start = get_time_msec();
+	while(i < data.num_of_fork)
 	{
-		pthread_create(&philo_treads[i], NULL, treads_work, (void *)&philo[i]);
-		usleep(50);
+		// philo[i].time_die = get_time_msec() + (long long)philo[i].for_philo->time_to_die;
+		philo[i].time_last_eat = get_time_msec();
 		i++;
 	}
+	pthread_t waiter;
+	pthread_create(&waiter, NULL, waiter_work, (void *) philo);
 	i = 0;
 	while(i < data.num_of_philo)
 	{
-		pthread_join(philo_treads[i], NULL);
+		pthread_create(&philo_treads[i], NULL, treads_work, (void *)&philo[i]);
+		usleep(1);
 		i++;
 	}
+	 while(i < data.num_of_philo)
+	{
+		pthread_detach(philo_treads[i]);
+		i++;
+	}
+
+	pthread_join(waiter, NULL);
+
+
+
 
 
 	// i = 0;                   //печать структур

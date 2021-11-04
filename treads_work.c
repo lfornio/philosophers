@@ -6,30 +6,32 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 09:18:32 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/03 13:38:37 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/04 16:31:38 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void print_status(t_philosophers *a, int i)
+void print_status(int time, t_philosophers *a, int i)
 {
-	int t = 0;
-	// t = time_print(a);
-
+	// int t = 0;
+	// // t = time_print(a);
+	pthread_mutex_lock(a->for_philo->lock);
 	if (i == LEFT_FORK)
-		printf("%d [ %d ] has taken a fork\n", t, a->id);
+		printf("%d %d has taken a fork\n", time, a->id);
 	else if (i == RIGHT_FORK)
-		printf("%d [ %d ] has taken a fork\n", t, a->id);
+		printf("%d %d has taken a fork\n", time, a->id);
 	else if (i == EATS)
-		printf("%d [ %d ] is eating\n", t, a->id);
+		printf("%d %d is eating\n", time, a->id);
 	else if (i == SLEEPS)
-		printf("%d [ %d ] is sleeping\n", t, a->id);
+		printf("%d %d is sleeping\n", time, a->id);
 	else if (i == THINKS)
-		printf("%d [ %d ] is thinking\n", t, a->id);
+		printf("%d %d is thinking\n", time, a->id);
 	else if (i == DIED)
-		printf("%d [ %d ] died\n", t, a->id);
-	i++;
+		printf("%d %d died\n", time, a->id);
+	// i++;
+	pthread_mutex_unlock(a->for_philo->lock);
+
 }
 
 // struct timeval take_time(void)
@@ -57,22 +59,37 @@ void *treads_work(void *arguments)
 	t_philosophers *a;
 	a = (t_philosophers *)arguments;
 
-	pthread_mutex_lock(a->left);
-	a->status = 1;
-	print_status(a, a->status);
-	pthread_mutex_lock(a->right);
-	a->status = 2;
-	print_status(a, a->status);
-	a->status = 3;
-	print_status(a, a->status);
-	usleep(a->for_philo->time_to_eat * 1000);
-	a->status = 4;
-	print_status(a, a->status);
-	pthread_mutex_unlock(a->right);
-	pthread_mutex_unlock(a->left);
-	usleep(a->for_philo->time_to_sleep * 1000);
-	a->status = 5;
-	print_status(a, a->status);
+	while (1)
+	{
+		// if(!(a->id % 2))
+		// 	usleep(100);
+		// if (pthread_mutex_lock(a->left);
+		if (!pthread_mutex_lock(a->left) && !pthread_mutex_lock(a->right))
+{
+		// print_status((int)(get_time_msec() - a->for_philo->time_start), a, a->status);
+		print_status((int)(get_time_msec() - a->for_philo->time_start), a, LEFT_FORK);
+		// pthread_mutex_lock(a->right);
+		print_status((int)(get_time_msec() - a->for_philo->time_start), a, RIGHT_FORK);
 
+		print_status((int)(get_time_msec() - a->for_philo->time_start), a, EATS);
+		a->count_how_many_eat++;
+		// if(a->count_how_many_eat == a->for_philo->num_each)
+		// 	a->stop = get_time_msec() + a->for_philo->time_to_eat;
+		count_time(a->for_philo->time_to_eat);
+		a->hungry = 1;
+		a->time_last_eat = get_time_msec();
+
+
+		// a->time_die = get_time_msec() + (long long)a->for_philo->time_to_die;
+		pthread_mutex_unlock(a->right);
+		pthread_mutex_unlock(a->left);
+}
+
+		print_status((int)(get_time_msec() - a->for_philo->time_start), a, SLEEPS);
+
+		count_time(a->for_philo->time_to_sleep);
+		a->hungry = 0;
+		print_status((int)(get_time_msec() - a->for_philo->time_start), a, THINKS);
+	}
 	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 09:39:40 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/02 13:38:54 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/04 16:28:21 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,4 +79,22 @@ int error_arg(char *str)
 		i++;
 	}
 	return (0);
+}
+
+long long get_time_msec(void)
+{
+	struct timeval t;
+	gettimeofday(&t, NULL);
+	return (t.tv_sec * 1000 + t.tv_usec / 1000);
+}
+
+void count_time(int a)
+{
+	long long end = get_time_msec() + a;
+	long long time_now = get_time_msec();
+	while(time_now < end)
+	{
+		usleep(50);
+		time_now = get_time_msec();
+	}
 }

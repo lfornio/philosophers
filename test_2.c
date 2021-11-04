@@ -3,32 +3,33 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-int take_time()
+long long gettimesec()
 {
 	struct timeval t;
 	gettimeofday(&t, NULL);
 	return (t.tv_sec * 1000 + t.tv_usec / 1000);
 }
-void my_usleep(int a)
+void count_time(int a)
 {
-	int stop = take_time() + a;
-	int time_now = take_time();
-	while(time_now < stop)
+	long long end = gettimesec() + a;
+	long long time_now = gettimesec();
+	while(time_now < end)
 	{
 		usleep(10);
-		time_now = take_time();
+		time_now = gettimesec();
 	}
 }
 
 int main()
 {
-	int a, b, c;
-	a = take_time();
+	long long a, b;
+	int c;
+	a = gettimesec();
 	// usleep(200 * 1000);
 	my_usleep(200);
-	b = take_time();
+	b = gettimesec();
 	// b = take_time() - a;
-	c = b - a;
+	c = (int) (b - a);
 	printf("time = %d\n", c);
 
 	write(1, "Exit\n", 5);
