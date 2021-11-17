@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 09:18:32 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/11 13:42:45 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/17 15:25:36 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ void	*treads_work(void *arguments)
 		{
 			status_eatinng(a);
 			a->count_how_many_eat++;
-			count_time(a->for_philo->time_to_eat);
 			a->hungry = 1;
 			a->time_last_eat = get_time_msec();
+			count_time(a->for_philo->time_to_eat);
 			pthread_mutex_unlock(a->left);
 			pthread_mutex_unlock(a->right);
 		}
