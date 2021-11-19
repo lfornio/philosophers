@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 09:39:40 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/18 15:44:33 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/19 17:36:33 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int error_arg(char *str)
 	return (0);
 }
 
-long long get_time_msec(void)
+long get_time_msec(void)
 {
 	struct timeval t;
 
@@ -92,8 +92,8 @@ long long get_time_msec(void)
 
 void count_time(int a)
 {
-	long long end;
-	long long time_now;
+	long end;
+	long time_now;
 
 	end = get_time_msec() + a;
 	time_now = get_time_msec();
@@ -104,41 +104,89 @@ void count_time(int a)
 	}
 }
 
-void print_status(int time, int id, int i)
+void print_status(int time, t_arguments *data, int i)
 {
+	sem_wait(data->lock);
 	if (i == LEFT_FORK)
-		printf("%d %d has taken a fork\n", time, id);
+		printf("%d %d has taken a fork\n", time, data->philosophers.id);
 	else if (i == RIGHT_FORK)
-		printf("%d %d has taken a fork\n", time, id);
+		printf("%d %d has taken a fork\n", time, data->philosophers.id);
 	else if (i == EATS)
-		printf("%d %d is eating\n", time, id);
+		printf("%d %d is eating\n", time, data->philosophers.id);
 	else if (i == SLEEPS)
-		printf("%d %d is sleeping\n", time, id);
+		printf("%d %d is sleeping\n", time, data->philosophers.id);
 	else if (i == THINKS)
-		printf("%d %d is thinking\n", time, id);
+		printf("%d %d is thinking\n", time, data->philosophers.id);
 	else if (i == DIED)
-		printf("%d %d died\n", time, id);
+		printf("%d %d died\n", time, data->philosophers.id);
+	sem_post(data->lock);
+}
+
+int find_pid_in_array(t_arguments *data, int a)
+{
+	int i;
+	i = 0;
+	while (data->array_pid[i])
+	{
+		if (data->array_pid[i] == a)
+			return (i);
+		i++;
+	}
+	return (0);
+}
+
+void wait_philo(t_arguments *data)
+{
+	int a;
+	int status;
+	int j;
+	int i;
+
+	a = waitpid(-1, &status, 0);
+	// 	printf("a = %d\n", a);
+	// 	printf("status = %d\n", status);
+	if (a < 0)
+		printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
+	if (WIFEXITED(status) == 1)
+	{
+
+		// printf("COOL\n");
+		j = find_pid_in_array(data, a);
+		// printf("j = %d\n", j);
+		i = 0;
+		while (i < data->num_of_philo)
+		{
+			if (i < j || i > j)
+			{
+				kill(data->array_pid[i], SIGKILL);
+				// printf("kill %d\n", i);
+			}
+
+			i++;
+		}
+	}
+	// 	// printf("OK\n");
+	// 	// pause();
 }
 
 void *waiter_work(void *arg)
 {
-	t_arguments *w;
-	int i;
+	t_arguments *data;
 	int a;
 
-	w = (t_arguments *)arg;
-	a = w->num_of_philo;
+	data = (t_arguments *)arg;
+	a = data->num_of_philo;
 	while (1)
 	{
-		i = -1;
-		while (++i < a)
+		sem_wait(data->lock_2);
+		if ((((int)(get_time_msec() - data->philosophers.time_last_eat)) > data->time_to_die) && data->philosophers.hungry == 0)
 		{
-			if ((((int)(get_time_msec() - w->philosophers.time_last_eat)) > w->time_to_die) && w->philosophers.hungry == 0)
-			{
-				print_status((int)(get_time_msec() - w->time_start), w->philosophers.id, DIED);
-				return (NULL);
-			}
+			print_status((int)(get_time_msec() - data->time_start), data, DIED);
+			usleep(50);
+			exit(1);
+			// data->philosophers.status = 1;
 		}
+		sem_post(data->lock_2);
 	}
 	return (NULL);
 }

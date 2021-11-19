@@ -16,7 +16,7 @@ int main()
 	sem = sem_open("sem", O_CREAT | O_EXCL, 0600, 5);
 	printf("sem = %p\n", sem);
 	// int id = fork();
-	int id = 0;
+	int id = -1;
 	int array[5];
 	while (i < n && (id = fork()))
 	{
@@ -24,34 +24,45 @@ int main()
 		i++;
 		usleep(1);
 	}
-	if (!id)
-	{
-		if (!sem_wait(sem) && !sem_wait(sem))
-		{
-		printf("%d\n", getpid());
-		printf("%d\n", getpid());
-		// int b = sem_getvalue(sem, )
-		printf("a = %d\n", getpid());
-		sleep(10);
-		sem_post(sem);
-		sem_post(sem);
-		}
-			// i = -1;
-		// while(++i < 2)
-		// 	{
-		// 		sem_wait(sem);
-		// 		printf("%d\n", getpid());
-		// 	}
-		// sem_wait(sem);
-		// printf("%d\n", getpid());
-		// sem_wait(sem);
-		// printf("%d\n", getpid());
-		// // int b = sem_getvalue(sem, )
-		// printf("a = %d\n", getpid());
-		// sleep(10);
-		// sem_post(sem);
-		// sem_post(sem);
-	}
+	// while (i < n)
+	// {
+	// 	if(id)
+	// 	{
+	// 		printf("QQQQ\n");
+	// 		id = fork();
+	// 		array[i] = id;
+	// 	}
+	// 	i++;
+	// 	usleep(1);
+	// }
+	// if (!id)
+	// {
+	// 	if (!sem_wait(sem) && !sem_wait(sem))
+	// 	{
+	// 	printf("%d\n", getpid());
+	// 	printf("%d\n", getpid());
+	// 	// int b = sem_getvalue(sem, )
+	// 	printf("a = %d\n", getpid());
+	// 	sleep(10);
+	// 	sem_post(sem);
+	// 	sem_post(sem);
+	// 	}
+	// 		// i = -1;
+	// 	// while(++i < 2)
+	// 	// 	{
+	// 	// 		sem_wait(sem);
+	// 	// 		printf("%d\n", getpid());
+	// 	// 	}
+	// 	// sem_wait(sem);
+	// 	// printf("%d\n", getpid());
+	// 	// sem_wait(sem);
+	// 	// printf("%d\n", getpid());
+	// 	// // int b = sem_getvalue(sem, )
+	// 	// printf("a = %d\n", getpid());
+	// 	// sleep(10);
+	// 	// sem_post(sem);
+	// 	// sem_post(sem);
+	// }
 
 	// int id = fork();
 	printf("END %d: %d\n", getpid(), getppid());

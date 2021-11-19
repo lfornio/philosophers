@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 07:54:02 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/18 16:00:18 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/19 17:35:26 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,21 +73,35 @@ int main(int argc, char **argv)
 		data.array_pid[i] = 0;
 	}
 	//------------------------------------------------
-	printf("Массив pid в начале\n");
-	for (int k = 0; k < data.num_of_philo; k++)
-		printf("%d  ", data.array_pid[k]);
-	printf("\n");
+	// printf("Массив pid в начале\n");
+	// for (int k = 0; k < data.num_of_philo; k++)
+	// 	printf("%d  ", data.array_pid[k]);
+	// printf("\n");
 	//------------------------------------------------
 	sem_t *forks;
 	forks = sem_open("forks", O_CREAT | O_EXCL, 0600, data.num_of_fork);
+	sem_t *lock;
+	lock = sem_open("lock", O_CREAT | O_EXCL, 0600, 1);
+	data.lock = lock;
+	sem_t *lock_2;
+	lock_2 = sem_open("lock_2", O_CREAT | O_EXCL, 0600, 1);
+	data.lock_2 = lock_2;
 	int pid;
 	i = 0;
 	data.time_start = get_time_msec();
 	while (i < data.num_of_philo)
 	{
 		pid = fork();
+		if (pid == -1)
+		{
+			printf("Error fork\n");
+			exit(1);
+		}
 		if (pid)
+		{
 			data.array_pid[i] = pid;
+			// wait_philo(&data);
+		}
 		else if (!pid)
 		{
 			data.philosophers.i = i;
@@ -95,6 +109,7 @@ int main(int argc, char **argv)
 			data.philosophers.hungry = 0;
 			data.philosophers.status = 0;
 			data.philosophers.count_how_many_eat = 0;
+			data.philosophers.status = 0;
 			data.philosophers.time_last_eat = get_time_msec();
 			// printf("PID процесса %d: родительский процесс %d\n", getpid(), getppid());
 			break;
@@ -102,53 +117,58 @@ int main(int argc, char **argv)
 		usleep(1);
 		i++;
 	}
-	//------------------------------------------------
-	if (pid)
-	{
-		printf("Массив pid\n");
-		for (int k = 0; k < data.num_of_philo; k++)
-			printf("%d  ", data.array_pid[k]);
-		printf("\n");
-	}
-	//------------------------------------------------
 	if (!pid)
 	{
+		pthread_t	waiter;
+
+		pthread_create(&waiter, NULL, waiter_work, (void *) &data);
+		// // return (-1);
+		pthread_detach(waiter);
+		// return (-1);
+
 		while (1)
 		{
+
 			if (!sem_wait(forks) && !sem_wait(forks))
 			{
-				print_status((int)(get_time_msec() - data.time_start), data.philosophers.id, LEFT_FORK);
-				print_status((int)(get_time_msec() - data.time_start), data.philosophers.id, RIGHT_FORK);
-				print_status((int)(get_time_msec() - data.time_start), data.philosophers.id, EATS);
+				print_status((int)(get_time_msec() - data.time_start), &data, LEFT_FORK);
+				print_status((int)(get_time_msec() - data.time_start), &data, RIGHT_FORK);
+				print_status((int)(get_time_msec() - data.time_start), &data, EATS);
 				data.philosophers.count_how_many_eat++;
-				if ((data.philosophers.id == data.num_of_philo) && (data.philosophers.count_how_many_eat == data.num_each) && data.num_each != -1)
-				{
-					printf("END\n");
-					// exit(1);
-					pause();
-				}
+				if ((data.philosophers.id == data.num_of_philo) && (data.philosophers.count_how_many_eat == data.num_each) && (data.num_each != -1))
+					exit(1);
 				data.philosophers.hungry = 1;
 				data.philosophers.time_last_eat = get_time_msec();
 				count_time(data.time_to_eat);
 				sem_post(forks);
 				sem_post(forks);
 			}
-			print_status((int)(get_time_msec() - data.time_start), data.philosophers.id, SLEEPS);
+			print_status((int)(get_time_msec() - data.time_start), &data, SLEEPS);
 			data.philosophers.hungry = 0;
 			count_time(data.time_to_sleep);
-			print_status((int)(get_time_msec() - data.time_start), data.philosophers.id, THINKS);
-
-			printf("i = %d, id = %d, hungry = %d, count_eat = %d\n", data.philosophers.i, data.philosophers.id,
-				   data.philosophers.hungry, data.philosophers.count_how_many_eat);
+			print_status((int)(get_time_msec() - data.time_start), &data, THINKS);
+			// printf("id = %d, status = %d\n", data.philosophers.id, data.philosophers.status);
 		}
 	}
-
+	// if (pid)
+	// {
+	// 	printf("Массив pid\n");
+	// 	for (int k = 0; k < data.num_of_philo; k++)
+	// 		printf("%d  ", data.array_pid[k]);
+	// 	printf("\n");
+	// }
 	//------------------------------------------------
 
 
-	// waitpid(-1)
+
 	sem_unlink("forks");
 	sem_close(forks);
-	pause();
+	sem_unlink("lock");
+	sem_close(lock);
+	sem_unlink("lock_2");
+	sem_close(lock_2);
+	wait_philo(&data);// wait_philo(&data);
+	// pause();
+
 	return (0);
 }
