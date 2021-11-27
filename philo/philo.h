@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/05 14:46:08 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/11 13:46:23 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/27 15:37:05 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,10 @@ typedef struct s_arguments
 	int				time_to_sleep;
 	int				num_of_fork;
 	int				num_each;
-	long long		time_start;
+	int				flag;
+	long			time_start;
 	pthread_mutex_t	*lock;
+	pthread_mutex_t	*lock_2;
 	pthread_mutex_t	*forks;
 	pthread_t		*philo_treads;
 }	t_arguments;
@@ -48,10 +50,9 @@ typedef struct s_philosophers
 	int				id;
 	int				left_fork;
 	int				right_fork;
-	long long		time_die;
-	long long		time_last_eat;
+	long			time_die;
+	long			time_last_eat;
 	int				count_how_many_eat;
-	int				hungry;
 	pthread_mutex_t	*left;
 	pthread_mutex_t	*right;
 	t_arguments		*for_philo;
@@ -61,10 +62,10 @@ int			f_atoi(const char *str);
 long long	long_atoi(const char *str);
 int			error_arg(char *str);
 void		*treads_work(void *arguments);
-long long	get_time_msec(void);
+long		get_time_msec(void);
 void		count_time(int a);
 void		*waiter_work(void *arg);
-void		print_status(int time, t_philosophers *a, int i);
+int			print_status(int time, t_philosophers *a, int i);
 int			error_arguments(int argc, char **argv);
 int			init_arguments(t_arguments *data, int argc, char **argv);
 void		init_philosophers(t_philosophers *philo, t_arguments *data);

@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/04 08:51:35 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/11 13:37:33 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/27 15:32:30 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	eating_count(t_philosophers *a, int num)
 int	monitor(t_philosophers *w, int a, int i)
 {
 	if ((((int)(get_time_msec() - w[i].time_last_eat))
-		> w[i].for_philo->time_to_die) && w[i].hungry == 0)
+		> w[i].for_philo->time_to_die))
 	{
 		print_status((int)(get_time_msec()
 				- w[i].for_philo->time_start), &w[i], DIED);

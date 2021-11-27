@@ -6,28 +6,34 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 09:18:32 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/17 15:25:36 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/27 15:38:24 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	print_status(int time, t_philosophers *a, int i)
+int	print_status(int time, t_philosophers *a, int i)
 {
-	pthread_mutex_lock(a->for_philo->lock);
-	if (i == LEFT_FORK)
-		printf("%d %d has taken a fork\n", time, a->id);
-	else if (i == RIGHT_FORK)
-		printf("%d %d has taken a fork\n", time, a->id);
-	else if (i == EATS)
-		printf("%d %d is eating\n", time, a->id);
-	else if (i == SLEEPS)
-		printf("%d %d is sleeping\n", time, a->id);
-	else if (i == THINKS)
-		printf("%d %d is thinking\n", time, a->id);
-	else if (i == DIED)
-		printf("%d %d died\n", time, a->id);
-	pthread_mutex_unlock(a->for_philo->lock);
+	if (!pthread_mutex_lock(a->for_philo->lock))
+	{
+		if (i == LEFT_FORK)
+			printf("%d %d has taken a fork\n", time, a->id);
+		else if (i == RIGHT_FORK)
+			printf("%d %d has taken a fork\n", time, a->id);
+		else if (i == EATS)
+			printf("%d %d is eating\n", time, a->id);
+		else if (i == SLEEPS)
+			printf("%d %d is sleeping\n", time, a->id);
+		else if (i == THINKS)
+			printf("%d %d is thinking\n", time, a->id);
+		if (i == DIED)
+		{
+			printf("%d %d died\n", time, a->id);
+			return (1);
+		}
+		pthread_mutex_unlock(a->for_philo->lock);
+	}
+	return (0);
 }
 
 void	status_eatinng(t_philosophers *a)
@@ -49,10 +55,9 @@ void	*treads_work(void *arguments)
 	{
 		if (!pthread_mutex_lock(a->left) && !pthread_mutex_lock(a->right))
 		{
-			status_eatinng(a);
-			a->count_how_many_eat++;
-			a->hungry = 1;
 			a->time_last_eat = get_time_msec();
+			a->count_how_many_eat++;
+			status_eatinng(a);
 			count_time(a->for_philo->time_to_eat);
 			pthread_mutex_unlock(a->left);
 			pthread_mutex_unlock(a->right);
@@ -60,7 +65,6 @@ void	*treads_work(void *arguments)
 		print_status((int)(get_time_msec() - a->for_philo->time_start),
 			a, SLEEPS);
 		count_time(a->for_philo->time_to_sleep);
-		a->hungry = 0;
 		print_status((int)(get_time_msec() - a->for_philo->time_start),
 			a, THINKS);
 	}

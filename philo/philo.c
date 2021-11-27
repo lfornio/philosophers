@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 07:54:02 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/11 12:50:43 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/27 15:34:47 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ int	init_arguments(t_arguments *data, int argc, char **argv)
 	data->time_to_eat = f_atoi(argv[3]);
 	data->time_to_sleep = f_atoi(argv[4]);
 	data->num_of_fork = data->num_of_philo;
+	data->flag = 1;
 	if (argc == 6)
 		data->num_each = f_atoi(argv[5]);
 	else
@@ -69,7 +70,6 @@ void	init_philosophers(t_philosophers *philo, t_arguments *data)
 		philo[i].left_fork = i;
 		philo[i].right_fork = (i + 1) % data->num_of_fork;
 		philo[i].count_how_many_eat = 0;
-		philo[i].hungry = 0;
 	}
 }
 

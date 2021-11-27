@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 09:39:40 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/11 12:53:02 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/23 13:11:46 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int	error_arg(char *str)
 	return (0);
 }
 
-long long	get_time_msec(void)
+long	get_time_msec(void)
 {
 	struct timeval	t;
 
@@ -92,8 +92,8 @@ long long	get_time_msec(void)
 
 void	count_time(int a)
 {
-	long long	end;
-	long long	time_now;
+	long	end;
+	long	time_now;
 
 	end = get_time_msec() + a;
 	time_now = get_time_msec();

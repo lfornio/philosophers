@@ -6,7 +6,7 @@
 /*   By: lfornio <lfornio@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/11 12:41:44 by lfornio           #+#    #+#             */
-/*   Updated: 2021/11/11 13:24:16 by lfornio          ###   ########.fr       */
+/*   Updated: 2021/11/27 15:36:40 by lfornio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,17 @@
 
 int	init_lock(t_arguments *data)
 {
-	pthread_mutex_t	l;
+	pthread_mutex_t	*l;
+	pthread_mutex_t	*l_2;
 
-	if (pthread_mutex_init(&l, NULL))
+	l = malloc(sizeof(pthread_mutex_t));
+	if (pthread_mutex_init(l, NULL))
 		return (-1);
-	data->lock = &l;
+	data->lock = l;
+	l_2 = malloc(sizeof(pthread_mutex_t));
+	if (pthread_mutex_init(l_2, NULL))
+		return (-1);
+	data->lock_2 = l_2;
 	return (0);
 }
 
@@ -27,9 +33,12 @@ void	destroy_forks(t_arguments *data)
 	int	i;
 
 	i = -1;
-	pthread_mutex_destroy(data->lock);
 	while (++i < data->num_of_fork)
 		pthread_mutex_destroy(&data->forks[i]);
+	free(data->lock);
+	free(data->lock_2);
+	pthread_mutex_destroy(data->lock);
+	pthread_mutex_destroy(data->lock_2);
 }
 
 void	init_start_time(t_arguments *data, t_philosophers *philo)

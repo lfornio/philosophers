@@ -1,9 +1,10 @@
 NAME		= 	philo_bonus
 SRCS		= 	philo_bonus.c \
+				semaphore_and_waiter.c \
+				philosophers_work.c \
 				function_0.c \
-				# function_1.c \
-				# treads_work.c \
-				# waiter_work.c
+				function_1.c
+
 CC 			= 	gcc
 FLAGS		=	-Wall -Wextra -Werror
 INCLUDES	=	philo_bonus.h
@@ -15,12 +16,10 @@ OBJS		=	$(SRCS:.c=.o)
 ${NAME}: $(OBJS) $(INCLUDE)
 	$(CC) $(FLAGS) $(OBJS) -o $(NAME)
 
-
 all : $(NAME)
 
 clean :
 	rm -f $(OBJS)
-
 
 fclean : clean
 	rm -f $(NAME)
